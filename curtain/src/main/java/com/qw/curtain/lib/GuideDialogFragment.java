@@ -137,9 +137,25 @@ public class GuideDialogFragment extends DialogFragment implements IGuide {
         dismissAllowingStateLoss();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (null != savedInstanceState && null == param) {
+            //the fragment was recreated by the FragmentManager after the activity
+            //was destroyed, all the runtime states were gone with the old activity
+            //so dismiss this empty shell instead of showing a broken curtain
+            setShowsDialog(false);
+            dismissAllowingStateLoss();
+        }
+    }
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        if (null == param || null == contentView) {
+            //defensive: never NPE here, show an empty transparent dialog instead
+            return new Dialog(requireActivity(), R.style.TransparentDialog);
+        }
         if (dialog == null) {
             boolean isInterceptAll = param.isInterceptTouchEvent && param.isInterceptTarget;
             if (isInterceptAll) {
@@ -166,7 +182,7 @@ public class GuideDialogFragment extends DialogFragment implements IGuide {
     @Override
     public void onDismiss(@NonNull DialogInterface dialog) {
         super.onDismiss(dialog);
-        if (null != param.callBack) {
+        if (null != param && null != param.callBack) {
             param.callBack.onDismiss(this);
         }
     }
