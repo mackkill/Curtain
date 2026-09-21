@@ -16,7 +16,7 @@
 
 ```java
 dependencies {
-    implementation 'com.github.soulqw:Curtain:0.3.0'
+    implementation 'com.github.mackkill:Curtain:0.3.1'
 }
 
 ```
